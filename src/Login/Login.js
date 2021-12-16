@@ -1,15 +1,18 @@
 import React, { Component, useState } from "react";
 import axios from "axios";
+import Homepage from "../Homepage";
+import { Link, Route, Routes, Navigate } from 'react-router-dom';
+import './Login.css';
 
 function Login() {
 
+   
     let [state, setState] = useState({
-        "username": "admin",
-        "password": "1234"
-    })
+        username: "",
+        password: ""
+    })       
 
     
-
     function handleFormSubmit(event) {
         event.preventDefault();
 
@@ -22,11 +25,28 @@ function Login() {
 
         axios.post(endpoint, user_object)
             .then(res => {
-                console.log(res.data.jwt);
-                localStorage.setItem("authorization", res.data.jwt);
-                handleDashboard();
+
+                if(Object.keys(Object.values(res)[0]) == 'jwt'){
+                    localStorage.setItem("authorization", res.data.jwt);
+                    handleDashboard();
+                }
+                else{
+                    alert('Login has failed, check you USERNAME/PASSWORD')
+                }                
+                // console.log(res.data.jwt);                
+                
             });
     };
+
+    function usernameChangedEvent(event) {
+        // event.targete.value
+        setState({ ...state, username: event.target.value })
+    }
+
+    function passwordChangedEvent(event) {
+        // event.targete.value
+        setState({ ...state, password: event.target.value })
+    }
 
     function handleDashboard() {
         const saved_token = localStorage.getItem("authorization");
@@ -40,33 +60,30 @@ function Login() {
             }
         })
             .then(res => {
-                console.log(res.data)
-                // if (res.data === "success") {
-                //     console.log(res.data)
-                // } else {
-                //     alert("Authentication failure");
-                // }
+                console.log(res.data)                
             });
     }
 
 
     return (
         <div className="App">
-            <div class="wrapper">
+            <div class="login-wrapper">
                 <form class="form-signin" onSubmit={handleFormSubmit}>
                     <h2 class="form-signin-heading">Please login</h2>
                     <div className="form-group">
                         <input type="text"
                             class="form-control"
                             placeholder="User name"
-                            value="admin"
+                            
+                            onChange={usernameChangedEvent}
                         />
                     </div>
                     <div className="form-group">
                         <input type="password"
                             class="form-control"
                             placeholder="password"
-                            value="admin"
+                            
+                            onChange={passwordChangedEvent}
                         />
                     </div>
                     <button class="btn btn-lg btn-primary btn-block" type="submit">
