@@ -25,7 +25,6 @@ function ProductsShow() {
 
         const saved_token = localStorage.getItem("authorization");
         const AuthStr = 'Bearer '.concat(saved_token);
-
         console.log("got token: ", AuthStr)
         console.log("USE EFFECT CALLED")
         axios.get("http://localhost:8080/products/getAll", {
@@ -40,7 +39,6 @@ function ProductsShow() {
     }, []);
 
     return (
-
         productsState.products.map((item) => {
             return <ProductList
                 id={item.id}
