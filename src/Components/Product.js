@@ -17,10 +17,9 @@ function Product() {
 
     const [selectedCategory, setSelectedCategory] = useState({});
 
-    const [inputState, setInputState] = useState({
-        prname: '',
-        prprice: 0.0
-    });
+    const [productName, setProductName] = useState({});
+
+    const [productPrice, setProductPrice] = useState(0.0);
 
     const saved_token = localStorage.getItem("jwt");
     const AuthStr = 'Bearer '.concat(saved_token);
@@ -37,10 +36,11 @@ function Product() {
     }
 
     function addNewProduct() {
-        const product = {name: inputState.prname, price: inputState.prprice, productCategory: selectedCategory, user: {id: 1}};
+        const product = {name: productName, price: productPrice, productCategory: selectedCategory, user: {id: 2}};
 
-        console.log(inputState.prname);
-        axios.post('http://localhost:8080/products', {headers: { 'Authorization': AuthStr }}, product)
+        console.log("aaa:" + productName + " " + productPrice + " " + selectedCategory);
+        console.log(product);
+        axios.post('http://localhost:8080/products', product, {headers: { 'Authorization': AuthStr }})
         .then(res => {
             console.log('Product has been added successfully', res.data);
         })
@@ -49,14 +49,9 @@ function Product() {
         })
     }
 
-    function onChangeProduct(e) {        
-        setInputState( {...inputState, [e.target.key]: [e.target.value]} )
-        console.log(inputState.prname + " " + inputState.prname.value);
-    }
-
     //--------------Operation
     useEffect(() => {
-        localStorage.setItem("jwt", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzOTYwOTc0NiwiZXhwIjoxNjM5NjI3NzQ2fQ.0Hi1HNx8ur9tgnwHNUKpW8EOINMu7ZCm6ad9_smb8-g");
+        localStorage.setItem("jwt", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzOTYxNjkyMiwiZXhwIjoxNjM5NjM0OTIyfQ.4hc3Hy_hrElDsDYsKNl9TXg6gW_J4ikrohB12N6edNI");
         localStorage.setItem("user", "admin");
 
         populateCategory();
@@ -70,10 +65,10 @@ function Product() {
                 <label>Create new Product:</label>
                 <br />
                 <br />
-                Name:<input type="text" value={inputState.prname.value} key="prname" onChange={onChangeProduct} />
+                Name:<input type="text" onChange={event => setProductName(event.target.value)} />
                 <br />
                 <br />
-                Price:<input type="text" key="prprice" onChange={onChangeProduct} />
+                Price:<input type="text" onChange={event => setProductPrice(event.target.value)} />
                 <br />
                 <br />
                 <ComboBox options={productCategory.category} name="category" enableAutocomplete onSelect={setSelectedCategory} />
