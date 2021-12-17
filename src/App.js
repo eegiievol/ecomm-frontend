@@ -11,18 +11,12 @@ function App() {
 
   //--------------View
   return (
-<<<<<<< HEAD
-    <div>
-        <Product />
-    </div>
-=======
     <BrowserRouter>
 
       <div className='App'>
         <Dashboard/>
       </div>
     </BrowserRouter>
->>>>>>> 51b89b9364cc2e085e163f981408dd893851fe2a
   );
 }
 
