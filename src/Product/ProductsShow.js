@@ -1,12 +1,15 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import ProductList from "./ProductList";
 import './product.css';
+
+export const ResponseContext = createContext();
 
 function ProductsShow() {
 
     const saved_token = localStorage.getItem("authorization");
     const AuthStr = 'Bearer '.concat(saved_token);
+    const [actionResponse, setActionResponse] = useState("");
 
     let [productsState, setProductsState] = useState({
         products: [
@@ -21,35 +24,70 @@ function ProductsShow() {
         ]
     })
 
-    useEffect(() => {
-
+    function deleteProduct(id) {
         const saved_token = localStorage.getItem("authorization");
         const AuthStr = 'Bearer '.concat(saved_token);
-        console.log("got token: ", AuthStr)
-        console.log("USE EFFECT CALLED")
+
+        axios.delete('http://localhost:8080/products/' + id, {
+            headers: {
+                'Authorization': AuthStr
+            }
+        })
+            .then(res => {
+                console.log('Success: ', res);
+                if (!res.data) {
+                    setActionResponse("Product cannot be deleted.");
+                }
+                else
+                    setActionResponse("Product deleted.");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+    }
+
+    function refresh() {
+        const saved_token = localStorage.getItem("authorization");
+        const AuthStr = 'Bearer '.concat(saved_token);
         axios.get("http://localhost:8080/products/getAll", {
             headers: {
                 'Authorization': AuthStr
             }
         })
             .then(res => {
-                console.log(res.data)
                 setProductsState({ products: res.data })
             })
+    }
+
+    useEffect(() => {
+        refresh();
     }, []);
 
-    return (
-        productsState.products.map((item) => {
-            return <ProductList
-                id={item.id}
-                productCategory={item.productCategory}
-                name={item.name}
-                addedDate={item.addedDate}
-                price={item.price}
-                productStatus={item.productStatus}
-            />
-        })
+    useEffect(() => {
+        refresh();
+    }, [actionResponse]);
 
+    return (
+        <ResponseContext.Provider value={actionResponse}>
+            <div className="responseMessage">{actionResponse}</div>
+            <div>
+                {
+                    productsState.products.map((item, index) => {
+                        return <ProductList
+                            id={item.id}
+                            productCategory={item.productCategory}
+                            name={item.name}
+                            addedDate={item.addedDate}
+                            price={item.price}
+                            productStatus={item.productStatus}
+                            index={index}
+                            imagePath={item.imagePath}
+                            deleteProduct={deleteProduct}
+                        />
+                    })
+                }
+            </div>
+        </ResponseContext.Provider>
     )
 }
 
