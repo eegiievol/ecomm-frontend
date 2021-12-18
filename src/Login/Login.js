@@ -4,7 +4,7 @@ import Homepage from "../Homepage";
 import { Link, Route, Routes, Navigate } from 'react-router-dom';
 import './Login.css';
 
-function Login() {
+function Login(props) {
 
    
     let [state, setState] = useState({
@@ -28,7 +28,12 @@ function Login() {
 
                 if(Object.keys(Object.values(res)[0]) == 'jwt'){
                     localStorage.setItem("authorization", res.data.jwt);
+                    localStorage.setItem("username", state.username);
+                    
+                    props.setUserState("logged");
                     handleDashboard();
+                    window.location = "/homepage"
+
                 }
                 else{
                     alert('Login has failed, check you USERNAME/PASSWORD')
