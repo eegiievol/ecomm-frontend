@@ -1,6 +1,5 @@
 // import logo from './logo.svg';
 import './App.css';
-import Product from './Components/Product';
 
 
 import { BrowserRouter } from 'react-router-dom';
